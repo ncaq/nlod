@@ -62,10 +62,9 @@ consonant =[ Consonant{ start = [ ("f", "p")
                       , primaryYo = "w"
                       , secondaryYo = "v"}]
 
-secondaryYoSwitch "c" = Just "ux"
-secondaryYoSwitch "h" = Just "ux"
-secondaryYoSwitch "t" = Just "ex"
-secondaryYoSwitch _   = Nothing
+secondaryYoSwitch = [ ("c", "ux")
+                    , ("h", "ux")
+                    , ("t", "ex")]
 
 vowel = [ ("'", "ai")
         , (",", "oi")
