@@ -17,7 +17,8 @@ makeMozc :: [T.Text]
 makeMozc = map (uncurry (\a b -> a <> "\t" <> b)) makeTable
 
 makeTable :: [(T.Text, T.Text)]
-makeTable = single
+makeTable = single <>
+            concatMap (\c -> zipWith (<>) (start c) vowel) consonant
 
 single :: [(T.Text, T.Text)]
 single = [ ("'", "xtu")
@@ -38,34 +39,37 @@ data Consonant = Consonant{ start       :: [(T.Text, T.Text)]
                           , primaryYo   :: T.Text
                           , secondaryYo :: T.Text}
 
-consonant =[ Consonant{ start = [ ("f", "p")
-                                , ("g", "g")
-                                , ("c", "k")
-                                , ("r", "r")]
-                      , soku = "g"
-                      , primaryYo = "c"
-                      , secondaryYo = "r"}
-           , Consonant{ start = [ ("d", "d")
-                                , ("h", "h")
-                                , ("t", "t")
-                                , ("n", "n")
-                                , ("s", "s")]
-                      , soku = "h"
-                      , primaryYo = "t"
-                      , secondaryYo = "n"}
-           , Consonant{ start = [ ("b", "b")
-                                , ("m", "m")
-                                , ("w", "w")
-                                , ("v", "y")
-                                , ("z", "z")]
-                      , soku = "m"
-                      , primaryYo = "w"
-                      , secondaryYo = "v"}]
+consonant :: [Consonant]
+consonant = [ Consonant{ start = [ ("f", "p")
+                                 , ("g", "g")
+                                 , ("c", "k")
+                                 , ("r", "r")]
+                       , soku = "g"
+                       , primaryYo = "c"
+                       , secondaryYo = "r"}
+            , Consonant{ start = [ ("d", "d")
+                                 , ("h", "h")
+                                 , ("t", "t")
+                                 , ("n", "n")
+                                 , ("s", "s")]
+                       , soku = "h"
+                       , primaryYo = "t"
+                       , secondaryYo = "n"}
+            , Consonant{ start = [ ("b", "b")
+                                 , ("m", "m")
+                                 , ("w", "w")
+                                 , ("v", "y")
+                                 , ("z", "z")]
+                       , soku = "m"
+                       , primaryYo = "w"
+                       , secondaryYo = "v"}]
 
+secondaryYoSwitch :: [(T.Text, T.Text)]
 secondaryYoSwitch = [ ("c", "ux")
                     , ("h", "ux")
                     , ("t", "ex")]
 
+vowel :: [(T.Text, T.Text)]
 vowel = [ ("'", "ai")
         , (",", "oi")
         , (".", "ei")
