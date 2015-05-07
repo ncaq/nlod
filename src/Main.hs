@@ -16,20 +16,34 @@ makeMozc = map (uncurry (\a b -> a <> "\t" <> toHiragana b)) makeTable
 
 makeTable :: [(T.Text, T.Text)]
 makeTable = special <>
-            single <>           -- 1 sequence
-            concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel]) consonant <> -- 2 sequence
+            single <> -- 1 sequence
+            concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel]) consonant <> -- 2 sequence consonant vowel
             concatMap (\x -> [ (cf <> soku x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- sokuVowel]) consonant <> -- 3 sequence soku
             concatMap (\x -> [ (cf <> primaryYo x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- primaryYoVowel]) consonant <> -- 3 sequence primary Yo
             concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [secondaryYo x], ys <- [lookup (fst c) (secondaryYoTable x)], v <- basicVowel, isJust ys ]) consonant -- 3 sequence secondary Yo
 
 special :: [(T.Text, T.Text)]
 special = [ ("-", "ー")
-          , ("[", "｢")
-          , ("]", "｣")
           , ("lh", "←")
           , ("lt", "↑")
           , ("ln", "↓")
           , ("ls", "→")
+          , ("l'", "xai")
+          , ("l,", "xoi")
+          , ("l.", "xei")
+          , ("lp", "xuu")
+          , ("ly", "xui")
+          , ("la", "xa")
+          , ("lo", "xo")
+          , ("le", "xe")
+          , ("lu", "xu")
+          , ("li", "xi")
+          , ("l;", "xan'")
+          , ("lq", "xon'")
+          , ("lj", "xen'")
+          , ("lk", "xun'")
+          , ("lx", "xin'")
+          , ("lca", "ヵ")
           ]
 
 single :: [(T.Text, T.Text)]
