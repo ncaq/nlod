@@ -24,6 +24,7 @@ makeTable = special <>
 
 special :: [(T.Text, T.Text)]
 special = [ ("-", "ー")
+          , ("nn", "n'")
           , ("lh", "←")
           , ("lt", "↑")
           , ("ln", "↓")
