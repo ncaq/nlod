@@ -18,7 +18,7 @@ makeTable :: [(T.Text, T.Text)]
 makeTable = single <>           -- 1 sequence
             concatMap (\x -> [ c <> v | c <- start x, v <- vowel]) consonant <> -- 2 sequence
             concatMap (\x -> [ (cf <> soku x <> vf, cs <> vs <> "xtu") | (cf, cs) <- start x, (vf, vs) <- vowel]) consonant <> -- 3 sequence soku
-            concatMap (\x -> [ (cf <> primaryYo x <> vf, cs <> "y" <> vs) | (cf, cs) <- start x, (vf, vs) <- vowel]) consonant <> -- 3 sequence primary Yo
+            concatMap (\x -> [ (cf <> primaryYo x <> vf, cs <> "ixy" <> vs) | (cf, cs) <- start x, (vf, vs) <- vowel]) consonant <> -- 3 sequence primary Yo
             concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [secondaryYo x], ys <- [lookup (fst c) (secondaryYoTable x)], v <- vowel, isJust ys ]) consonant -- 3 sequence secondary Yo
 
 single :: [(T.Text, T.Text)]
