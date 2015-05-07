@@ -104,7 +104,7 @@ consonant = [ Consonant{ start = [ ("f", "p")
 
 basicVowel :: [(T.Text, T.Text)]
 basicVowel = [ ("'", "ai")
-             , (",", "oi")
+             , (",", "ou")
              , (".", "ei")
              , ("p", "uu")
              , ("y", "ui")
@@ -140,7 +140,7 @@ sokuVowel = [ ("'", "ixyaxtu")
 
 primaryYoVowel :: [(T.Text, T.Text)]
 primaryYoVowel = [ ("'", "ixyai")
-                 , (",", "ixyoi")
+                 , (",", "ixyou")
                  , (".", "ixei")
                  , ("p", "ixyuu")
                  , ("y", "ixyui")
