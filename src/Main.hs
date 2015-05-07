@@ -76,7 +76,7 @@ consonant = [ Consonant{ start = [ ("f", "p")
                        , soku = "g"
                        , primaryYo = "c"
                        , secondaryYo = "r"
-                       , secondaryYoTable = [("c", "ux")]
+                       , secondaryYoTable = [ ("c", "ux")]
                        }
             , Consonant{ start = [ ("d", "d")
                                  , ("h", "h")
@@ -86,7 +86,8 @@ consonant = [ Consonant{ start = [ ("f", "p")
                        , soku = "h"
                        , primaryYo = "t"
                        , secondaryYo = "n"
-                       , secondaryYoTable = [("h", "ux")]
+                       , secondaryYoTable = [ ("h", "ux")
+                                            , ("t", "ex")]
                        }
             , Consonant{ start = [ ("b", "b")
                                  , ("m", "m")
@@ -96,7 +97,7 @@ consonant = [ Consonant{ start = [ ("f", "p")
                        , soku = "m"
                        , primaryYo = "w"
                        , secondaryYo = "v"
-                       , secondaryYoTable = [("t", "ex")]
+                       , secondaryYoTable = []
                        }
             ]
 
