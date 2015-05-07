@@ -14,7 +14,7 @@ main :: IO ()
 main = mapM_ T.putStrLn makeMozc
 
 makeMozc :: [T.Text]
-makeMozc = map (uncurry (\a b -> a <> "\t" <> b)) makeTable
+makeMozc = map (uncurry (\a b -> a <> "\t" <> toHiragana b)) makeTable
 
 makeTable :: [(T.Text, T.Text)]
 makeTable = single <>
