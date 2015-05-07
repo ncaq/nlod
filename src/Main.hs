@@ -70,7 +70,7 @@ data Consonant = Consonant{ start            :: [(T.Text, T.Text)]
 
 consonant :: [Consonant]
 consonant = [ Consonant{ start = [ ("f", "p")
-                                 , ("g", "ng")
+                                 , ("g", "g")
                                  , ("c", "k")
                                  , ("r", "r")]
                        , soku = "g"
