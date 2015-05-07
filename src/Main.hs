@@ -1,14 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Main where
-import           Control.Applicative
-import           Data.Functor
-import           Data.List           ()
-import qualified Data.Map            as M
+import           Data.List    ()
+import qualified Data.Map     as M
 import           Data.Maybe
 import           Data.Monoid
-import qualified Data.Text           as T
-import qualified Data.Text.IO        as T
+import qualified Data.Text    as T
+import qualified Data.Text.IO as T
 import           NLP.Romkan
 
 main :: IO ()
@@ -18,11 +16,11 @@ makeMozc :: [T.Text]
 makeMozc = map (uncurry (\a b -> a <> "\t" <> toHiragana b)) makeTable
 
 makeTable :: [(T.Text, T.Text)]
-makeTable = single <>
-            concatMap (\x -> liftA2 (<>) (start x) vowel) consonant <>
-            concatMap (\x -> liftA2 (\(cf, cs) (vf, vs) -> (cf <> soku x <> vf, cs <> vs <> "xtu")) (start x) vowel) consonant <>
-            concatMap (\x -> liftA2 (\(cf, cs) (vf, vs) -> (cf <> primaryYo x <> vf, cs <> "y" <> vs)) (start x) vowel) consonant <>
-            concatMap (\x -> [ c <> (fst y, fromJust $ snd y) <> v | c <- start x, y <- [(secondaryYo x, M.lookup (fst c) secondaryYoSwitch)], v <- vowel, isJust $ snd y ]) consonant
+makeTable = single <>           -- 1 sequence
+            concatMap (\x -> [ c <> v | c <- start x, v <- vowel]) consonant <> -- 2 sequence
+            concatMap (\x -> [ (cf <> soku x <> vf, cs <> vs <> "xtu") | (cf, cs) <- start x, (vf, vs) <- vowel]) consonant <> -- 3 sequence soku
+            concatMap (\x -> [ (cf <> primaryYo x <> vf, cs <> "y" <> vs) | (cf, cs) <- start x, (vf, vs) <- vowel]) consonant <> -- 3 sequence primary Yo
+            concatMap (\x -> [ c <> (fst y, fromJust $ snd y) <> v | c <- start x, y <- [(secondaryYo x, M.lookup (fst c) secondaryYoSwitch)], v <- vowel, isJust $ snd y ]) consonant -- 3 sequence secondary Yo
 
 single :: [(T.Text, T.Text)]
 single = [ ("'", "xtu")
