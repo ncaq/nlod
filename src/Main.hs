@@ -18,7 +18,7 @@ makeMozc = map (uncurry (\a b -> a <> "\t" <> b)) makeTable
 
 makeTable :: [(T.Text, T.Text)]
 makeTable = single <>
-            concatMap (\c -> zipWith (<>) (start c) vowel) consonant
+            concatMap (\c -> liftA2 (<>) (start c) vowel) consonant
 
 single :: [(T.Text, T.Text)]
 single = [ ("'", "xtu")
