@@ -19,7 +19,8 @@ makeMozc = map (uncurry (\a b -> a <> "\t" <> toHiragana b)) makeTable
 makeTable :: [(T.Text, T.Text)]
 makeTable = single <>
             concatMap (\x -> liftA2 (<>) (start x) vowel) consonant <>
-            concatMap (\x -> liftA2 (\(cf, cs) (vf, vs) -> (cf <> soku x <> vf, cs <> vs <> "xtu")) (start x) vowel) consonant
+            concatMap (\x -> liftA2 (\(cf, cs) (vf, vs) -> (cf <> soku x <> vf, cs <> vs <> "xtu")) (start x) vowel) consonant <>
+            concatMap (\x -> liftA2 (\(cf, cs) (vf, vs) -> (cf <> primaryYo x <> vf, cs <> "y" <> vs)) (start x) vowel) consonant
 
 single :: [(T.Text, T.Text)]
 single = [ ("'", "xtu")
