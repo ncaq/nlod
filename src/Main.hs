@@ -4,6 +4,7 @@ module Main where
 import           Control.Applicative
 import           Data.Functor
 import           Data.List           ()
+import qualified Data.Map            as M
 import           Data.Maybe
 import           Data.Monoid
 import qualified Data.Text           as T
@@ -20,7 +21,8 @@ makeTable :: [(T.Text, T.Text)]
 makeTable = single <>
             concatMap (\x -> liftA2 (<>) (start x) vowel) consonant <>
             concatMap (\x -> liftA2 (\(cf, cs) (vf, vs) -> (cf <> soku x <> vf, cs <> vs <> "xtu")) (start x) vowel) consonant <>
-            concatMap (\x -> liftA2 (\(cf, cs) (vf, vs) -> (cf <> primaryYo x <> vf, cs <> "y" <> vs)) (start x) vowel) consonant
+            concatMap (\x -> liftA2 (\(cf, cs) (vf, vs) -> (cf <> primaryYo x <> vf, cs <> "y" <> vs)) (start x) vowel) consonant <>
+            concatMap (\x -> [ c <> (fst y, fromJust $ snd y) <> v | c <- start x, y <- [(secondaryYo x, M.lookup (fst c) secondaryYoSwitch)], v <- vowel, isJust $ snd y ]) consonant
 
 single :: [(T.Text, T.Text)]
 single = [ ("'", "xtu")
@@ -66,8 +68,9 @@ consonant = [ Consonant{ start = [ ("f", "p")
                        , primaryYo = "w"
                        , secondaryYo = "v"}]
 
-secondaryYoSwitch :: [(T.Text, T.Text)]
-secondaryYoSwitch = [ ("c", "ux")
+secondaryYoSwitch :: M.Map T.Text T.Text
+secondaryYoSwitch = M.fromList
+                    [ ("c", "ux")
                     , ("h", "ux")
                     , ("t", "ex")]
 
