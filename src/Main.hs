@@ -2,7 +2,6 @@
 
 module Main where
 import           Data.List    ()
-import qualified Data.Map     as M
 import           Data.Maybe
 import           Data.Monoid
 import qualified Data.Text    as T
@@ -20,7 +19,7 @@ makeTable = single <>           -- 1 sequence
             concatMap (\x -> [ c <> v | c <- start x, v <- vowel]) consonant <> -- 2 sequence
             concatMap (\x -> [ (cf <> soku x <> vf, cs <> vs <> "xtu") | (cf, cs) <- start x, (vf, vs) <- vowel]) consonant <> -- 3 sequence soku
             concatMap (\x -> [ (cf <> primaryYo x <> vf, cs <> "y" <> vs) | (cf, cs) <- start x, (vf, vs) <- vowel]) consonant <> -- 3 sequence primary Yo
-            concatMap (\x -> [ c <> (fst y, fromJust $ snd y) <> v | c <- start x, y <- [(secondaryYo x, M.lookup (fst c) secondaryYoSwitch)], v <- vowel, isJust $ snd y ]) consonant -- 3 sequence secondary Yo
+            concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [secondaryYo x], ys <- [lookup (fst c) (secondaryYoTable x)], v <- vowel, isJust ys ]) consonant -- 3 sequence secondary Yo
 
 single :: [(T.Text, T.Text)]
 single = [ ("'", "xtu")
@@ -36,19 +35,23 @@ single = [ ("'", "xtu")
          , ("k", "un'")
          , ("x", "in'")]
 
-data Consonant = Consonant{ start       :: [(T.Text, T.Text)]
-                          , soku        :: T.Text
-                          , primaryYo   :: T.Text
-                          , secondaryYo :: T.Text}
+data Consonant = Consonant{ start            :: [(T.Text, T.Text)]
+                          , soku             :: T.Text
+                          , primaryYo        :: T.Text
+                          , secondaryYo      :: T.Text
+                          , secondaryYoTable :: [(T.Text, T.Text)]
+                          }
 
 consonant :: [Consonant]
 consonant = [ Consonant{ start = [ ("f", "p")
-                                 , ("g", "g")
+                                 , ("g", "ng")
                                  , ("c", "k")
                                  , ("r", "r")]
                        , soku = "g"
                        , primaryYo = "c"
-                       , secondaryYo = "r"}
+                       , secondaryYo = "r"
+                       , secondaryYoTable = [("c", "ux")]
+                       }
             , Consonant{ start = [ ("d", "d")
                                  , ("h", "h")
                                  , ("t", "t")
@@ -56,7 +59,9 @@ consonant = [ Consonant{ start = [ ("f", "p")
                                  , ("s", "s")]
                        , soku = "h"
                        , primaryYo = "t"
-                       , secondaryYo = "n"}
+                       , secondaryYo = "n"
+                       , secondaryYoTable = [("h", "ux")]
+                       }
             , Consonant{ start = [ ("b", "b")
                                  , ("m", "m")
                                  , ("w", "w")
@@ -64,13 +69,10 @@ consonant = [ Consonant{ start = [ ("f", "p")
                                  , ("z", "z")]
                        , soku = "m"
                        , primaryYo = "w"
-                       , secondaryYo = "v"}]
-
-secondaryYoSwitch :: M.Map T.Text T.Text
-secondaryYoSwitch = M.fromList
-                    [ ("c", "ux")
-                    , ("h", "ux")
-                    , ("t", "ex")]
+                       , secondaryYo = "v"
+                       , secondaryYoTable = [("t", "ex")]
+                       }
+            ]
 
 vowel :: [(T.Text, T.Text)]
 vowel = [ ("'", "ai")
