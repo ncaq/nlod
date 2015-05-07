@@ -17,8 +17,8 @@ makeMozc = map (uncurry (\a b -> a <> "\t" <> toHiragana b)) makeTable
 makeTable :: [(T.Text, T.Text)]
 makeTable = single <>           -- 1 sequence
             concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel]) consonant <> -- 2 sequence
-            concatMap (\x -> [ (cf <> soku x <> vf, cs <> vs <> "xtu") | (cf, cs) <- start x, (vf, vs) <- sokuVowel]) consonant <> -- 3 sequence soku
-            concatMap (\x -> [ (cf <> primaryYo x <> vf, cs <> "ixy" <> vs) | (cf, cs) <- start x, (vf, vs) <- basicVowel]) consonant <> -- 3 sequence primary Yo
+            concatMap (\x -> [ (cf <> soku x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- sokuVowel]) consonant <> -- 3 sequence soku
+            concatMap (\x -> [ (cf <> primaryYo x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- primaryYoVowel]) consonant <> -- 3 sequence primary Yo
             concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [secondaryYo x], ys <- [lookup (fst c) (secondaryYoTable x)], v <- basicVowel, isJust ys ]) consonant -- 3 sequence secondary Yo
 
 single :: [(T.Text, T.Text)]
@@ -33,7 +33,8 @@ single = [ ("'", "xtu")
          , ("q", "on'")
          , ("j", "en'")
          , ("k", "un'")
-         , ("x", "in'")]
+         , ("x", "in'")
+         ]
 
 data Consonant = Consonant{ start            :: [(T.Text, T.Text)]
                           , soku             :: T.Text
@@ -74,33 +75,56 @@ consonant = [ Consonant{ start = [ ("f", "p")
                        }
             ]
 
-baseVowel :: [(T.Text, T.Text)]
-baseVowel = [ ("a", "a")
-            , ("o", "o")
-            , ("e", "e")
-            , ("u", "u")
-            , ("i", "i")
-            , (";", "an'")
-            , ("q", "on'")
-            , ("j", "en'")
-            , ("k", "un'")
-            , ("x", "in'")
-            ]
-
 basicVowel :: [(T.Text, T.Text)]
-basicVowel = baseVowel <>
-            [ ("'", "ai")
-            , (",", "oi")
-            , (".", "ei")
-            , ("p", "uu")
-            , ("y", "ui")
+basicVowel = [ ("'", "ai")
+             , (",", "oi")
+             , (".", "ei")
+             , ("p", "uu")
+             , ("y", "ui")
+             , ("a", "a")
+             , ("o", "o")
+             , ("e", "e")
+             , ("u", "u")
+             , ("i", "i")
+             , (";", "an'")
+             , ("q", "on'")
+             , ("j", "en'")
+             , ("k", "un'")
+             , ("x", "in'")
             ]
 
 sokuVowel :: [(T.Text, T.Text)]
-sokuVowel = baseVowel <>
-            [ ("'", "ixya")
-            , (",", "ixyo")
-            , (".", "ixe")
-            , ("p", "ixyu")
-            , ("i", "ixi")
+sokuVowel = [ ("'", "ixyaxtu")
+            , (",", "ixyoxtu")
+            , (".", "ixextu")
+            , ("p", "ixyuxtu")
+            , ("y", "ixixtu")
+            , ("a", "axtu")
+            , ("o", "oxtu")
+            , ("e", "extu")
+            , ("u", "uxtu")
+            , ("i", "ixtu")
+            , (";", "an'xtu")
+            , ("q", "on'xtu")
+            , ("j", "en'xtu")
+            , ("k", "un'xtu")
+            , ("x", "in'xtu")
             ]
+
+primaryYoVowel :: [(T.Text, T.Text)]
+primaryYoVowel = [ ("'", "ixai")
+                 , (",", "ixoi")
+                 , (".", "ixei")
+                 , ("p", "ixuu")
+                 , ("y", "ixui")
+                 , ("a", "ixa")
+                 , ("o", "ixo")
+                 , ("e", "ixe")
+                 , ("u", "ixu")
+                 , ("i", "ixi")
+                 , (";", "ixan'")
+                 , ("q", "ixon'")
+                 , ("j", "ixen'")
+                 , ("k", "ixun'")
+                 , ("x", "ixin'")
+                 ]
