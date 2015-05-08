@@ -30,8 +30,8 @@ seqRoma = concat
           [ manual
           , single -- 1 sequence
           , concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel (de $ asLevelKeys x)]) consonant -- 2 sequence basic consonant + vowel
+          , concatMap (\x -> [ (cf <> loan x <> vf, cs <> vs) | (cf, cs) <- loanStart x, (vf, vs) <- basicVowel (de $ asLevelKeys x)]) consonant -- 3 sequence loan speak
           , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonVowel (asLevelKeys x)]) consonant -- 3 sequence yoon and shortcut
-          , concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [fst (loan x)], ys <- [lookup (fst c) (snd (loan x))], v <- basicVowel (de $ asLevelKeys x), isJust ys ]) consonant -- 3 sequence loan speak
           , concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant -- 3 sequence shortcut sokuon and etc
           ]
   where de xs = (head xs, last xs)
@@ -77,9 +77,10 @@ single = [ ("'", "xtu")
          ]
 
 data Consonant = Consonant{ start       :: [(T.Text, T.Text)]
-                          , shortcut    :: T.Text
+                          , loan        :: T.Text
+                          , loanStart   :: [(T.Text, T.Text)]
                           , yoon        :: T.Text
-                          , loan        :: (T.Text, [(T.Text, T.Text)])
+                          , shortcut    :: T.Text
                           , asLevelKeys :: [T.Text]
                           }
 
@@ -89,10 +90,11 @@ consonant = [ Consonant{ start = [ ("f", "p")
                                  , ("c", "k")
                                  , ("r", "r")
                                  ]
-                       , shortcut = "g"
+                       , loan = "r"
+                       , loanStart = [ ("c", "kux")
+                                     ]
                        , yoon = "c"
-                       , loan = ("r", [ ("c", "ux")
-                                      ])
+                       , shortcut = "g"
                        , asLevelKeys = [ "f"
                                        , "g"
                                        , "c"
@@ -106,11 +108,12 @@ consonant = [ Consonant{ start = [ ("f", "p")
                                  , ("n", "n")
                                  , ("s", "s")
                                  ]
-                       , shortcut = "h"
+                       , loan = "n"
+                       , loanStart = [ ("h", "f")
+                                     , ("t", "tex")
+                                     ]
                        , yoon = "t"
-                       , loan = ("n", [ ("h", "ux")
-                                      , ("t", "ex")
-                                      ])
+                       , shortcut = "h"
                        , asLevelKeys = [ "d"
                                        , "h"
                                        , "t"
@@ -122,12 +125,13 @@ consonant = [ Consonant{ start = [ ("f", "p")
                                  , ("m", "m")
                                  , ("w", "w")
                                  , ("v", "y")
-                                 , ("vv", "v")
                                  , ("z", "z")
                                  ]
-                       , shortcut = "m"
+                       , loan = "v"
+                       , loanStart = [ ("v", "v")
+                                     ]
                        , yoon = "w"
-                       , loan = ("v", [])
+                       , shortcut = "m"
                        , asLevelKeys = [ "b"
                                        , "m"
                                        , "w"
