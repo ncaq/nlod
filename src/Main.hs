@@ -165,8 +165,7 @@ basicVowel (yuu, you) = [ ("'", "ai")
                         , ("j", "en'")
                         , ("k", "un'")
                         , ("x", "in'")
-                        ]
-                        <>
+                        ] <>
                         [ (yuu, "ixyuu")
                         , (you, "ixyou")
                         ]
@@ -187,8 +186,7 @@ yoonVowel keys = [ ("'", "ixyai")
                  , ("j", "ixen'")
                  , ("k", "ixyun'")
                  , ("x", "ixin'")
-                 ]
-                 <>
+                 ] <>
                  zip keys [ "ixyatu"
                           , "ixyaku"
                           , "ixyoku"
