@@ -24,7 +24,7 @@ makeTable = special <>
             concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel]) consonant <> -- 2 sequence consonant vowel
             concatMap (\x -> [ (cf <> soku x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- sokuVowel]) consonant <> -- 3 sequence soku
             concatMap (\x -> [ (cf <> primaryYo x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- primaryYoVowel]) consonant <> -- 3 sequence primary Yo
-            concatMap (\x -> [ (cf <> yf <> vf, fromJust ys cs <> vs ) | (cf, cs) <- start x, yf <- [secondaryYo x], ys <- [lookup cf (secondaryYoTable x)], (vf, vs) <- basicVowel, isJust ys ]) consonant -- 3 sequence secondary Yo
+            concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [secondaryYo x], ys <- [lookup (fst c) (secondaryYoTable x)], v <- basicVowel, isJust ys ]) consonant -- 3 sequence secondary Yo
 
 special :: [(T.Text, T.Text)]
 special = [ ("-", "ー")
@@ -70,7 +70,7 @@ data Consonant = Consonant{ start            :: [(T.Text, T.Text)]
                           , soku             :: T.Text
                           , primaryYo        :: T.Text
                           , secondaryYo      :: T.Text
-                          , secondaryYoTable :: [(T.Text, T.Text -> T.Text)]
+                          , secondaryYoTable :: [(T.Text, T.Text)]
                           }
 
 consonant :: [Consonant]
@@ -81,7 +81,7 @@ consonant = [ Consonant{ start = [ ("f", "p")
                        , soku = "g"
                        , primaryYo = "c"
                        , secondaryYo = "r"
-                       , secondaryYoTable = [ ("c", (<> "ux"))]
+                       , secondaryYoTable = [ ("c", "ux")]
                        }
             , Consonant{ start = [ ("d", "d")
                                  , ("h", "h")
@@ -91,8 +91,8 @@ consonant = [ Consonant{ start = [ ("f", "p")
                        , soku = "h"
                        , primaryYo = "t"
                        , secondaryYo = "n"
-                       , secondaryYoTable = [ ("h", (<> "ux"))
-                                            , ("t", (<> "ex"))]
+                       , secondaryYoTable = [ ("h", "ux")
+                                            , ("t", "ex")]
                        }
             , Consonant{ start = [ ("b", "b")
                                  , ("m", "m")
