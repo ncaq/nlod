@@ -98,7 +98,7 @@ consonant = [ Consonant{ start = [ ("f", "p")
                        , soku = "m"
                        , primaryYo = "w"
                        , secondaryYo = "v"
-                       , secondaryYoTable = []
+                       , secondaryYoTable = [ ("v", "\bヴx")]
                        }
             ]
 
