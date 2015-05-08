@@ -30,8 +30,7 @@ seqRoma = mconcat
           [ manual
           , single -- 1 sequence
           , concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel]) consonant -- 2 sequence basic consonant + vowel
-          , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonVowel]) consonant -- 3 sequence basic yo on
-          , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonShortcutThree (asLevelKeys x)]) consonant -- 3 sequence shortcut yo on
+          , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonVowel (asLevelKeys x)]) consonant -- 3 sequence yo on and shortcut
           , concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [fst (loan x)], ys <- [lookup (fst c) (snd (loan x))], v <- basicVowel, isJust ys ]) consonant -- 3 sequence loan speak
           , concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant -- 3 sequence shortcut soku on and etc
           ]
@@ -155,32 +154,30 @@ basicVowel = [ ("'", "ai")
              , ("x", "in'")
              ]
 
-yoonVowel :: [(T.Text, T.Text)]
-yoonVowel = [ ("'", "ixyai")
-            , (",", "ixyou")
-            , (".", "ixei")
-            , ("p", "ixyuu")
-            , ("y", "ixyui")
-            , ("a", "ixya")
-            , ("o", "ixyo")
-            , ("e", "ixe")
-            , ("u", "ixyu")
-            , ("i", "ixi")
-            , (";", "ixyan'")
-            , ("q", "ixyon'")
-            , ("j", "ixen'")
-            , ("k", "ixyun'")
-            , ("x", "ixin'")
-            ]
-
-yoonShortcutThree :: [T.Text] -> [(T.Text, T.Text)]
-yoonShortcutThree keys = zip keys base
-    where base = [ "ixyatu"
-                 , "ixyaku"
-                 , "ixyoku"
-                 , "ixyuku"
-                 , "ixyutu"
+yoonVowel :: [T.Text] -> [(T.Text, T.Text)]
+yoonVowel keys = [ ("'", "ixyai")
+                 , (",", "ixyou")
+                 , (".", "ixei")
+                 , ("p", "ixyuu")
+                 , ("y", "ixyui")
+                 , ("a", "ixya")
+                 , ("o", "ixyo")
+                 , ("e", "ixe")
+                 , ("u", "ixyu")
+                 , ("i", "ixi")
+                 , (";", "ixyan'")
+                 , ("q", "ixyon'")
+                 , ("j", "ixen'")
+                 , ("k", "ixyun'")
+                 , ("x", "ixin'")
                  ]
+                 <>
+                 zip keys [ "ixyatu"
+                          , "ixyaku"
+                          , "ixyoku"
+                          , "ixyuku"
+                          , "ixyutu"
+                          ]
 
 shortcutVowel :: [(T.Text, T.Text)]
 shortcutVowel = [ ("'", "ixyaxtu")
