@@ -26,14 +26,15 @@ toDwimKana roma | T.head roma == 'v' = toKatakana roma -- "ヴ"
                 | otherwise = toHiragana roma
 
 seqRoma :: [(T.Text, T.Text)]
-seqRoma = mconcat
+seqRoma = concat
           [ manual
           , single -- 1 sequence
-          , concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel]) consonant -- 2 sequence basic consonant + vowel
-          , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonVowel (asLevelKeys x)]) consonant -- 3 sequence yo on and shortcut
-          , concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [fst (loan x)], ys <- [lookup (fst c) (snd (loan x))], v <- basicVowel, isJust ys ]) consonant -- 3 sequence loan speak
-          , concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant -- 3 sequence shortcut soku on and etc
+          , concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel (de $ asLevelKeys x)]) consonant -- 2 sequence basic consonant + vowel
+          , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonVowel (asLevelKeys x)]) consonant -- 3 sequence yoon and shortcut
+          , concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [fst (loan x)], ys <- [lookup (fst c) (snd (loan x))], v <- basicVowel (de $ asLevelKeys x), isJust ys ]) consonant -- 3 sequence loan speak
+          , concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant -- 3 sequence shortcut sokuon and etc
           ]
+  where de xs = (head xs, last xs)
 
 manual :: [(T.Text, T.Text)]
 manual = [ ("-", "ー")
@@ -136,23 +137,27 @@ consonant = [ Consonant{ start = [ ("f", "p")
                        }
             ]
 
-basicVowel :: [(T.Text, T.Text)]
-basicVowel = [ ("'", "ai")
-             , (",", "ou")
-             , (".", "ei")
-             , ("p", "uu")
-             , ("y", "ui")
-             , ("a", "a")
-             , ("o", "o")
-             , ("e", "e")
-             , ("u", "u")
-             , ("i", "i")
-             , (";", "an'")
-             , ("q", "on'")
-             , ("j", "en'")
-             , ("k", "un'")
-             , ("x", "in'")
-             ]
+basicVowel :: (T.Text, T.Text) -> [(T.Text, T.Text)]
+basicVowel (yuu, you) = [ ("'", "ai")
+                        , (",", "ou")
+                        , (".", "ei")
+                        , ("p", "uu")
+                        , ("y", "ui")
+                        , ("a", "a")
+                        , ("o", "o")
+                        , ("e", "e")
+                        , ("u", "u")
+                        , ("i", "i")
+                        , (";", "an'")
+                        , ("q", "on'")
+                        , ("j", "en'")
+                        , ("k", "un'")
+                        , ("x", "in'")
+                        ]
+                        <>
+                        [ (yuu, "ixyuu")
+                        , (you, "ixyou")
+                        ]
 
 yoonVowel :: [T.Text] -> [(T.Text, T.Text)]
 yoonVowel keys = [ ("'", "ixyai")
