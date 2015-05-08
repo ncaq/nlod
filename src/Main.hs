@@ -31,7 +31,7 @@ seqRoma = mconcat
           , single -- 1 sequence
           , concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel]) consonant -- 2 sequence basic consonant + vowel
           , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonVowel]) consonant -- 3 sequence basic yo on
-          , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonShortcut (asLevelKeys x)]) consonant -- 3 sequence shortcut yo on
+          , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonShortcutThree (asLevelKeys x)]) consonant -- 3 sequence shortcut yo on
           , concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [fst (loan x)], ys <- [lookup (fst c) (snd (loan x))], v <- basicVowel, isJust ys ]) consonant -- 3 sequence loan speak
           , concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant -- 3 sequence shortcut soku on
           ]
@@ -191,8 +191,8 @@ yoonVowel = [ ("'", "ixyai")
             , ("x", "ixin'")
             ]
 
-yoonShortcut :: [T.Text] -> [(T.Text, T.Text)]
-yoonShortcut keys = zip keys base
+yoonShortcutThree :: [T.Text] -> [(T.Text, T.Text)]
+yoonShortcutThree keys = zip keys base
     where base = [ "ixyatu"
                  , "ixyaku"
                  , "ixyoku"
