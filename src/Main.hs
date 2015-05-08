@@ -15,16 +15,19 @@ makeMozc :: [T.Text]
 makeMozc = map (uncurry (\a b -> a <> "\t" <> toDwimKana b)) makeTable
 
 toDwimKana :: T.Text -> T.Text
-toDwimKana roma | T.head roma == 'v' = toKatakana roma
+toDwimKana roma | T.head roma == 'v' = toKatakana roma -- "ヴ"
                 | otherwise = toHiragana roma
 
 makeTable :: [(T.Text, T.Text)]
-makeTable = manual <>
-            single <> -- 1 sequence
-            concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel]) consonant <> -- 2 sequence basic consonant + vowel
-            concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant <> -- 3 sequence shortcut soku on
-            concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonVowel]) consonant <> -- 3 sequence basic yo on
-            concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [fst (loan x)], ys <- [lookup (fst c) (snd (loan x))], v <- basicVowel, isJust ys ]) consonant -- 3 sequence loan speak
+makeTable = mconcat
+            [ manual
+            , single -- 1 sequence
+            , concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel]) consonant -- 2 sequence basic consonant + vowel
+            , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonVowel]) consonant -- 3 sequence basic yo on
+            , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonShortcut (asLevelKeys x)]) consonant -- 3 sequence shortcut yo on
+            , concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [fst (loan x)], ys <- [lookup (fst c) (snd (loan x))], v <- basicVowel, isJust ys ]) consonant -- 3 sequence loan speak
+            , concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant -- 3 sequence shortcut soku on
+            ]
 
 manual :: [(T.Text, T.Text)]
 manual = [ ("-", "ー")
@@ -183,9 +186,9 @@ yoonVowel = [ ("'", "ixyai")
 
 yoonShortcut :: [T.Text] -> [(T.Text, T.Text)]
 yoonShortcut keys = zip keys base
-    where base = [ "xyatu"
-                 , "xyaku"
-                 , "xyoku"
-                 , "xyuku"
-                 , "xyutu"
+    where base = [ "ixyatu"
+                 , "ixyaku"
+                 , "ixyoku"
+                 , "ixyuku"
+                 , "ixyutu"
                  ]
