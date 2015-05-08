@@ -38,11 +38,12 @@ seqRoma = concat
 
 manual :: [(T.Text, T.Text)]
 manual = [ ("-", "ー")
-         , ("nn", "n'")
+         , ("l/", "･")
          , ("lh", "←")
          , ("lt", "↑")
          , ("ln", "↓")
          , ("ls", "→")
+         , ("nn", "n'")
          ]
 
 single :: [(T.Text, T.Text)]
