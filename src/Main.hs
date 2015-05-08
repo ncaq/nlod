@@ -1,33 +1,40 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Main where
-import           Data.List    ()
+import           Control.Applicative
+import           Data.Char
+import           Data.List           ()
 import           Data.Maybe
 import           Data.Monoid
-import qualified Data.Text    as T
-import qualified Data.Text.IO as T
+import qualified Data.Text           as T
+import qualified Data.Text.IO        as T
 import           NLP.Romkan
 
 main :: IO ()
 main = mapM_ T.putStrLn makeMozc
 
 makeMozc :: [T.Text]
-makeMozc = map (uncurry (\a b -> a <> "\t" <> toDwimKana b)) makeTable
+makeMozc = map (uncurry (\s h -> s <> "\t" <> h)) romaKana
+
+romaKana :: [(T.Text, T.Text)]
+romaKana = map (fromJust <$>) $ filter (isJust . snd) $ map (toDwimKanaMaybe <$>) seqRoma
+  where toDwimKanaMaybe roma = let kana = toDwimKana roma
+                               in if isNothing (T.find (\c -> isLatin1 c && isAlpha c) kana) then Just kana else Nothing
 
 toDwimKana :: T.Text -> T.Text
 toDwimKana roma | T.head roma == 'v' = toKatakana roma -- "ヴ"
                 | otherwise = toHiragana roma
 
-makeTable :: [(T.Text, T.Text)]
-makeTable = mconcat
-            [ manual
-            , single -- 1 sequence
-            , concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel]) consonant -- 2 sequence basic consonant + vowel
-            , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonVowel]) consonant -- 3 sequence basic yo on
-            , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonShortcut (asLevelKeys x)]) consonant -- 3 sequence shortcut yo on
-            , concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [fst (loan x)], ys <- [lookup (fst c) (snd (loan x))], v <- basicVowel, isJust ys ]) consonant -- 3 sequence loan speak
-            , concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant -- 3 sequence shortcut soku on
-            ]
+seqRoma :: [(T.Text, T.Text)]
+seqRoma = mconcat
+          [ manual
+          , single -- 1 sequence
+          , concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel]) consonant -- 2 sequence basic consonant + vowel
+          , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonVowel]) consonant -- 3 sequence basic yo on
+          , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonShortcut (asLevelKeys x)]) consonant -- 3 sequence shortcut yo on
+          , concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [fst (loan x)], ys <- [lookup (fst c) (snd (loan x))], v <- basicVowel, isJust ys ]) consonant -- 3 sequence loan speak
+          , concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant -- 3 sequence shortcut soku on
+          ]
 
 manual :: [(T.Text, T.Text)]
 manual = [ ("-", "ー")
