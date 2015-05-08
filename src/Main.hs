@@ -91,7 +91,10 @@ consonant = [ Consonant{ start = [ ("f", "p")
                                  , ("r", "r")
                                  ]
                        , loan = "r"
-                       , loanStart = [ ("c", "kux")
+                       , loanStart = [ ("f", "pux")
+                                     , ("g", "gux")
+                                     , ("c", "kux")
+                                     , ("r", "rux")
                                      ]
                        , yoon = "c"
                        , shortcut = "g"
@@ -109,8 +112,11 @@ consonant = [ Consonant{ start = [ ("f", "p")
                                  , ("s", "s")
                                  ]
                        , loan = "n"
-                       , loanStart = [ ("h", "f")
+                       , loanStart = [ ("d", "dux")
+                                     , ("h", "fux")
                                      , ("t", "tex")
+                                     , ("n", "nux")
+                                     , ("s", "sux")
                                      ]
                        , yoon = "t"
                        , shortcut = "h"
@@ -128,7 +134,11 @@ consonant = [ Consonant{ start = [ ("f", "p")
                                  , ("z", "z")
                                  ]
                        , loan = "v"
-                       , loanStart = [ ("v", "v")
+                       , loanStart = [ ("b", "bux")
+                                     , ("m", "mux")
+                                     , ("v", "v")
+                                     , ("w", "ux")
+                                     , ("z", "zux")
                                      ]
                        , yoon = "w"
                        , shortcut = "m"
