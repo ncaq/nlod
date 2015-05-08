@@ -19,37 +19,37 @@ toDwimKana roma | T.head roma == 'v' = toKatakana roma
                 | otherwise = toHiragana roma
 
 makeTable :: [(T.Text, T.Text)]
-makeTable = special <>
+makeTable = manual <>
             single <> -- 1 sequence
-            concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel]) consonant <> -- 2 sequence consonant vowel
-            concatMap (\x -> [ (cf <> soku x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- sokuVowel]) consonant <> -- 3 sequence soku
-            concatMap (\x -> [ (cf <> primaryYo x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- primaryYoVowel]) consonant <> -- 3 sequence primary Yo
-            concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [secondaryYo x], ys <- [lookup (fst c) (secondaryYoTable x)], v <- basicVowel, isJust ys ]) consonant -- 3 sequence secondary Yo
+            concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel]) consonant <> -- 2 sequence basic consonant + vowel
+            concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant <> -- 3 sequence shortcut soku on
+            concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonVowel]) consonant <> -- 3 sequence basic yo on
+            concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [fst (loan x)], ys <- [lookup (fst c) (snd (loan x))], v <- basicVowel, isJust ys ]) consonant -- 3 sequence loan speak
 
-special :: [(T.Text, T.Text)]
-special = [ ("-", "ー")
-          , ("nn", "n'")
-          , ("lh", "←")
-          , ("lt", "↑")
-          , ("ln", "↓")
-          , ("ls", "→")
-          , ("l'", "xai")
-          , ("l,", "xoi")
-          , ("l.", "xei")
-          , ("lp", "xuu")
-          , ("ly", "xui")
-          , ("la", "xa")
-          , ("lo", "xo")
-          , ("le", "xe")
-          , ("lu", "xu")
-          , ("li", "xi")
-          , ("l;", "xan'")
-          , ("lq", "xon'")
-          , ("lj", "xen'")
-          , ("lk", "xun'")
-          , ("lx", "xin'")
-          , ("lca", "ヵ")
-          ]
+manual :: [(T.Text, T.Text)]
+manual = [ ("-", "ー")
+         , ("nn", "n'")
+         , ("lh", "←")
+         , ("lt", "↑")
+         , ("ln", "↓")
+         , ("ls", "→")
+         , ("l'", "xai")
+         , ("l,", "xoi")
+         , ("l.", "xei")
+         , ("lp", "xuu")
+         , ("ly", "xui")
+         , ("la", "xa")
+         , ("lo", "xo")
+         , ("le", "xe")
+         , ("lu", "xu")
+         , ("li", "xi")
+         , ("l;", "xan'")
+         , ("lq", "xon'")
+         , ("lj", "xen'")
+         , ("lk", "xun'")
+         , ("lx", "xin'")
+         , ("lca", "ヵ")
+         ]
 
 single :: [(T.Text, T.Text)]
 single = [ ("'", "xtu")
@@ -66,35 +66,36 @@ single = [ ("'", "xtu")
          , ("x", "in'")
          ]
 
-data Consonant = Consonant{ start            :: [(T.Text, T.Text)]
-                          , soku             :: T.Text
-                          , primaryYo        :: T.Text
-                          , secondaryYo      :: T.Text
-                          , secondaryYoTable :: [(T.Text, T.Text)]
-                          , asLevelKeys      :: T.Text
+data Consonant = Consonant{ start       :: [(T.Text, T.Text)]
+                          , shortcut    :: T.Text
+                          , yoon        :: T.Text
+                          , loan        :: (T.Text, [(T.Text, T.Text)])
+                          , asLevelKeys :: T.Text
                           }
 
 consonant :: [Consonant]
 consonant = [ Consonant{ start = [ ("f", "p")
                                  , ("g", "g")
                                  , ("c", "k")
-                                 , ("r", "r")]
-                       , soku = "g"
-                       , primaryYo = "c"
-                       , secondaryYo = "r"
-                       , secondaryYoTable = [ ("c", "ux")]
+                                 , ("r", "r")
+                                 ]
+                       , shortcut = "g"
+                       , yoon = "c"
+                       , loan = ("r", [ ("c", "ux")
+                                      ])
                        , asLevelKeys = "fgcrl"
                        }
             , Consonant{ start = [ ("d", "d")
                                  , ("h", "h")
                                  , ("t", "t")
                                  , ("n", "n")
-                                 , ("s", "s")]
-                       , soku = "h"
-                       , primaryYo = "t"
-                       , secondaryYo = "n"
-                       , secondaryYoTable = [ ("h", "ux")
-                                            , ("t", "ex")]
+                                 , ("s", "s")
+                                 ]
+                       , shortcut = "h"
+                       , yoon = "t"
+                       , loan = ("n", [ ("h", "ux")
+                                      , ("t", "ex")
+                                      ])
                        , asLevelKeys = "dhtns"
                        }
             , Consonant{ start = [ ("b", "b")
@@ -102,11 +103,11 @@ consonant = [ Consonant{ start = [ ("f", "p")
                                  , ("w", "w")
                                  , ("v", "y")
                                  , ("vv", "v")
-                                 , ("z", "z")]
-                       , soku = "m"
-                       , primaryYo = "w"
-                       , secondaryYo = "v"
-                       , secondaryYoTable = []
+                                 , ("z", "z")
+                                 ]
+                       , shortcut = "m"
+                       , yoon = "w"
+                       , loan = ("v", [])
                        , asLevelKeys = "bmwvz"
                        }
             ]
@@ -127,40 +128,40 @@ basicVowel = [ ("'", "ai")
              , ("j", "en'")
              , ("k", "un'")
              , ("x", "in'")
-            ]
+             ]
 
-sokuVowel :: [(T.Text, T.Text)]
-sokuVowel = [ ("'", "ixyaxtu")
-            , (",", "ixyoxtu")
-            , (".", "ixextu")
-            , ("p", "ixyuxtu")
-            , ("y", "ixixtu")
-            , ("a", "axtu")
-            , ("o", "oxtu")
-            , ("e", "extu")
-            , ("u", "uxtu")
-            , ("i", "ixtu")
-            , (";", "an'xtu")
-            , ("q", "on'xtu")
-            , ("j", "en'xtu")
-            , ("k", "un'xtu")
-            , ("x", "in'xtu")
-            ]
+shortcutVowel :: [(T.Text, T.Text)]
+shortcutVowel = [ ("'", "ixyaxtu")
+                , (",", "ixyoxtu")
+                , (".", "ixextu")
+                , ("p", "ixyuxtu")
+                , ("y", "ixixtu")
+                , ("a", "axtu")
+                , ("o", "oxtu")
+                , ("e", "extu")
+                , ("u", "uxtu")
+                , ("i", "ixtu")
+                , (";", "an'xtu")
+                , ("q", "on'xtu")
+                , ("j", "en'xtu")
+                , ("k", "un'xtu")
+                , ("x", "in'xtu")
+                ]
 
-primaryYoVowel :: [(T.Text, T.Text)]
-primaryYoVowel = [ ("'", "ixyai")
-                 , (",", "ixyou")
-                 , (".", "ixei")
-                 , ("p", "ixyuu")
-                 , ("y", "ixyui")
-                 , ("a", "ixya")
-                 , ("o", "ixyo")
-                 , ("e", "ixe")
-                 , ("u", "ixyu")
-                 , ("i", "ixi")
-                 , (";", "ixyan'")
-                 , ("q", "ixyon'")
-                 , ("j", "ixen'")
-                 , ("k", "ixyun'")
-                 , ("x", "ixin'")
-                 ]
+yoonVowel :: [(T.Text, T.Text)]
+yoonVowel = [ ("'", "ixyai")
+            , (",", "ixyou")
+            , (".", "ixei")
+            , ("p", "ixyuu")
+            , ("y", "ixyui")
+            , ("a", "ixya")
+            , ("o", "ixyo")
+            , ("e", "ixe")
+            , ("u", "ixyu")
+            , ("i", "ixi")
+            , (";", "ixyan'")
+            , ("q", "ixyon'")
+            , ("j", "ixen'")
+            , ("k", "ixyun'")
+            , ("x", "ixin'")
+            ]
