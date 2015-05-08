@@ -71,6 +71,7 @@ data Consonant = Consonant{ start            :: [(T.Text, T.Text)]
                           , primaryYo        :: T.Text
                           , secondaryYo      :: T.Text
                           , secondaryYoTable :: [(T.Text, T.Text)]
+                          , asLevelKeys      :: T.Text
                           }
 
 consonant :: [Consonant]
@@ -82,6 +83,7 @@ consonant = [ Consonant{ start = [ ("f", "p")
                        , primaryYo = "c"
                        , secondaryYo = "r"
                        , secondaryYoTable = [ ("c", "ux")]
+                       , asLevelKeys = "fgcrl"
                        }
             , Consonant{ start = [ ("d", "d")
                                  , ("h", "h")
@@ -93,6 +95,7 @@ consonant = [ Consonant{ start = [ ("f", "p")
                        , secondaryYo = "n"
                        , secondaryYoTable = [ ("h", "ux")
                                             , ("t", "ex")]
+                       , asLevelKeys = "dhtns"
                        }
             , Consonant{ start = [ ("b", "b")
                                  , ("m", "m")
@@ -104,6 +107,7 @@ consonant = [ Consonant{ start = [ ("f", "p")
                        , primaryYo = "w"
                        , secondaryYo = "v"
                        , secondaryYoTable = []
+                       , asLevelKeys = "bmwvz"
                        }
             ]
 
