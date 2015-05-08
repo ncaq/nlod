@@ -2,6 +2,7 @@
 
 module Main where
 import           Control.Applicative
+import           Control.Arrow
 import           Data.Char
 import           Data.List           ()
 import           Data.Maybe
@@ -30,7 +31,6 @@ seqRoma = concat
           [ manual
           , single -- 1 sequence
           , concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel (de $ asLevelKeys x)]) consonant -- 2 sequence basic consonant + vowel
-          , concatMap (\x -> [ (cf <> loan x <> vf, cs <> vs) | (cf, cs) <- loanStart x, (vf, vs) <- basicVowel (de $ asLevelKeys x)]) consonant -- 3 sequence loan speak
           , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonVowel (asLevelKeys x)]) consonant -- 3 sequence yoon and shortcut
           , concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant -- 3 sequence shortcut sokuon and etc
           ]
@@ -77,8 +77,6 @@ single = [ ("'", "xtu")
          ]
 
 data Consonant = Consonant{ start       :: [(T.Text, T.Text)]
-                          , loan        :: T.Text
-                          , loanStart   :: [(T.Text, T.Text)]
                           , yoon        :: T.Text
                           , shortcut    :: T.Text
                           , asLevelKeys :: [T.Text]
@@ -89,13 +87,13 @@ consonant = [ Consonant{ start = [ ("f", "p")
                                  , ("g", "g")
                                  , ("c", "k")
                                  , ("r", "r")
+                                 ] <>
+                                 map (first (<> "r"))
+                                 [ ("f", "pux")
+                                 , ("g", "gux")
+                                 , ("c", "kux")
+                                 , ("r", "rux")
                                  ]
-                       , loan = "r"
-                       , loanStart = [ ("f", "pux")
-                                     , ("g", "gux")
-                                     , ("c", "kux")
-                                     , ("r", "rux")
-                                     ]
                        , yoon = "c"
                        , shortcut = "g"
                        , asLevelKeys = [ "f"
@@ -110,14 +108,14 @@ consonant = [ Consonant{ start = [ ("f", "p")
                                  , ("t", "t")
                                  , ("n", "n")
                                  , ("s", "s")
+                                 ] <>
+                                 map (first (<> "n"))
+                                 [ ("d", "dux")
+                                 , ("h", "fux")
+                                 , ("t", "tex")
+                                 , ("n", "nux")
+                                 , ("s", "sux")
                                  ]
-                       , loan = "n"
-                       , loanStart = [ ("d", "dux")
-                                     , ("h", "fux")
-                                     , ("t", "tex")
-                                     , ("n", "nux")
-                                     , ("s", "sux")
-                                     ]
                        , yoon = "t"
                        , shortcut = "h"
                        , asLevelKeys = [ "d"
@@ -132,14 +130,14 @@ consonant = [ Consonant{ start = [ ("f", "p")
                                  , ("w", "w")
                                  , ("v", "y")
                                  , ("z", "z")
+                                 ] <>
+                                 map (first (<> "v"))
+                                 [ ("b", "bux")
+                                 , ("m", "mux")
+                                 , ("v", "v")
+                                 , ("w", "ux")
+                                 , ("z", "zux")
                                  ]
-                       , loan = "v"
-                       , loanStart = [ ("b", "bux")
-                                     , ("m", "mux")
-                                     , ("v", "v")
-                                     , ("w", "ux")
-                                     , ("z", "zux")
-                                     ]
                        , yoon = "w"
                        , shortcut = "m"
                        , asLevelKeys = [ "b"
