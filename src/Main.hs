@@ -33,7 +33,7 @@ seqRoma = mconcat
           , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonVowel]) consonant -- 3 sequence basic yo on
           , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonShortcutThree (asLevelKeys x)]) consonant -- 3 sequence shortcut yo on
           , concatMap (\x -> [ c <> (yf, fromJust ys) <> v | c <- start x, yf <- [fst (loan x)], ys <- [lookup (fst c) (snd (loan x))], v <- basicVowel, isJust ys ]) consonant -- 3 sequence loan speak
-          , concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant -- 3 sequence shortcut soku on
+          , concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant -- 3 sequence shortcut soku on and etc
           ]
 
 manual :: [(T.Text, T.Text)]
@@ -155,24 +155,6 @@ basicVowel = [ ("'", "ai")
              , ("x", "in'")
              ]
 
-shortcutVowel :: [(T.Text, T.Text)]
-shortcutVowel = [ ("'", "ixyaxtu")
-                , (",", "ixyoxtu")
-                , (".", "ixextu")
-                , ("p", "ixyuxtu")
-                , ("y", "ixixtu")
-                , ("a", "axtu")
-                , ("o", "oxtu")
-                , ("e", "extu")
-                , ("u", "uxtu")
-                , ("i", "ixtu")
-                , (";", "an'xtu")
-                , ("q", "on'xtu")
-                , ("j", "en'xtu")
-                , ("k", "un'xtu")
-                , ("x", "in'xtu")
-                ]
-
 yoonVowel :: [(T.Text, T.Text)]
 yoonVowel = [ ("'", "ixyai")
             , (",", "ixyou")
@@ -199,3 +181,21 @@ yoonShortcutThree keys = zip keys base
                  , "ixyuku"
                  , "ixyutu"
                  ]
+
+shortcutVowel :: [(T.Text, T.Text)]
+shortcutVowel = [ ("'", "ixyaxtu")
+                , (",", "ixyoxtu")
+                , (".", "ixextu")
+                , ("p", "ixyuxtu")
+                , ("y", "ixixtu")
+                , ("a", "axtu")
+                , ("o", "oxtu")
+                , ("e", "extu")
+                , ("u", "uxtu")
+                , ("i", "ixtu")
+                , (";", "an'xtu")
+                , ("q", "on'xtu")
+                , ("j", "en'xtu")
+                , ("k", "un'xtu")
+                , ("x", "in'xtu")
+                ]
