@@ -113,7 +113,6 @@ consonant = [ Consonant{ start = [ ("f", "p")
                                  [ ("d", "dux")
                                  , ("h", "fux")
                                  , ("t", "tex")
-                                 , ("n", "nux")
                                  , ("s", "sux")
                                  ]
                        , yoon = "t"
