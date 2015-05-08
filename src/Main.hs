@@ -70,7 +70,7 @@ data Consonant = Consonant{ start       :: [(T.Text, T.Text)]
                           , shortcut    :: T.Text
                           , yoon        :: T.Text
                           , loan        :: (T.Text, [(T.Text, T.Text)])
-                          , asLevelKeys :: T.Text
+                          , asLevelKeys :: [T.Text]
                           }
 
 consonant :: [Consonant]
@@ -83,7 +83,12 @@ consonant = [ Consonant{ start = [ ("f", "p")
                        , yoon = "c"
                        , loan = ("r", [ ("c", "ux")
                                       ])
-                       , asLevelKeys = "fgcrl"
+                       , asLevelKeys = [ "f"
+                                       , "g"
+                                       , "c"
+                                       , "r"
+                                       , "l"
+                                       ]
                        }
             , Consonant{ start = [ ("d", "d")
                                  , ("h", "h")
@@ -96,7 +101,12 @@ consonant = [ Consonant{ start = [ ("f", "p")
                        , loan = ("n", [ ("h", "ux")
                                       , ("t", "ex")
                                       ])
-                       , asLevelKeys = "dhtns"
+                       , asLevelKeys = [ "d"
+                                       , "h"
+                                       , "t"
+                                       , "n"
+                                       , "s"
+                                       ]
                        }
             , Consonant{ start = [ ("b", "b")
                                  , ("m", "m")
@@ -108,7 +118,12 @@ consonant = [ Consonant{ start = [ ("f", "p")
                        , shortcut = "m"
                        , yoon = "w"
                        , loan = ("v", [])
-                       , asLevelKeys = "bmwvz"
+                       , asLevelKeys = [ "b"
+                                       , "m"
+                                       , "w"
+                                       , "v"
+                                       , "z"
+                                       ]
                        }
             ]
 
@@ -165,3 +180,12 @@ yoonVowel = [ ("'", "ixyai")
             , ("k", "ixyun'")
             , ("x", "ixin'")
             ]
+
+yoonShortcut :: [T.Text] -> [(T.Text, T.Text)]
+yoonShortcut keys = zip keys base
+    where base = [ "xyatu"
+                 , "xyaku"
+                 , "xyoku"
+                 , "xyuku"
+                 , "xyutu"
+                 ]
