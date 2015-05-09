@@ -96,7 +96,7 @@ consonant = [ Consonant{ start = [ ("f", "p")
                                  , ("s", "s")
                                  ] <>
                                  map (first (<> "n"))
-                                 [ ("d", "dux")
+                                 [ ("d", "dex")
                                  , ("h", "fux")
                                  , ("t", "tex")
                                  , ("s", "sux")
