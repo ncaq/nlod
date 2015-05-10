@@ -27,7 +27,7 @@ toDwimKana roma | T.head roma == 'v' = toKatakana roma -- "ヴ"
                 | otherwise = toHiragana roma
 
 seqRoma :: [(T.Text, T.Text)]
-seqRoma = concat
+seqRoma = filter grass $ concat
           [ manual
           , single -- 1 sequence
           , concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel (de $ asLevelKeys x)]) consonant -- 2 sequence basic consonant + vowel
@@ -35,6 +35,7 @@ seqRoma = concat
           , concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant -- 3 sequence shortcut sokuon and etc
           ]
   where de xs = (head xs, last xs)
+        grass (s, _) = not $ T.isPrefixOf "ww" s -- grow grass
 
 manual :: [(T.Text, T.Text)]
 manual = [ ("-", "ー")
