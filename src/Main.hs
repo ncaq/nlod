@@ -27,24 +27,44 @@ toDwimKana roma | T.head roma == 'v' = toKatakana roma -- "ヴ"
                 | otherwise = toHiragana roma
 
 seqRoma :: [(T.Text, T.Text)]
-seqRoma = filter grass $ concat
-          [ manual
-          , single -- 1 sequence
+seqRoma = (manual <>) $
+          filter removeConflict $ concat
+          [ single -- 1 sequence
           , concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel (de $ asLevelKeys x)]) consonant -- 2 sequence basic consonant + vowel
           , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonVowel (asLevelKeys x)]) consonant -- 3 sequence yoon and shortcut
           , concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant -- 3 sequence shortcut sokuon and etc
           ]
   where de xs = (head xs, last xs)
-        grass (s, _) = not $ T.isPrefixOf "ww" s -- grow grass
+        removeConflict (s, _) = not $ or [ T.isPrefixOf "ww" s -- grow
+                                         , T.isPrefixOf "lf" s
+                                         , T.isPrefixOf "lg" s
+                                         , T.isPrefixOf "lc" s
+                                         , T.isPrefixOf "lr" s
+                                         , T.isPrefixOf "ll" s
+                                         ]
 
 manual :: [(T.Text, T.Text)]
 manual = [ ("-", "ー")
+         , ("nn", "n'")
+         , ("/e", "∃")
+         , ("/u", "∀")
+         , ("l`", "¬")
+         , ("lf", "∋")
+         , ("lg", "↖")
+         , ("lc", "ヵ")
+         , ("lr", "々")
+         , ("ll", "↗")
          , ("l/", "･")
+         , ("ld", "∈")
          , ("lh", "←")
          , ("lt", "↑")
          , ("ln", "↓")
          , ("ls", "→")
-         , ("nn", "n'")
+         , ("lb", "⇔")
+         , ("lm", "↙")
+         , ("lw", "∧")
+         , ("lv", "∨")
+         , ("lz", "↘")
          ]
 
 single :: [(T.Text, T.Text)]
