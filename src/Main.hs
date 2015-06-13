@@ -4,7 +4,7 @@ module Main where
 import           Control.Applicative
 import           Control.Arrow
 import           Data.Char
-import           Data.List           ()
+import           Data.List
 import           Data.Maybe
 import           Data.Monoid
 import qualified Data.Text           as T
@@ -27,7 +27,8 @@ toDwimKana roma | T.head roma == 'v' = toKatakana roma -- "ヴ"
                 | otherwise = toHiragana roma
 
 seqRoma :: [(T.Text, T.Text)]
-seqRoma = (manual <>) $
+seqRoma = nub $
+          (manual <>) $
           filter removeConflict $ concat
           [ single -- 1 sequence
           , concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel (de $ asLevelKeys x)]) consonant -- 2 sequence basic consonant + vowel
@@ -46,6 +47,7 @@ seqRoma = (manual <>) $
 manual :: [(T.Text, T.Text)]
 manual = [ ("-", "ー")
          , ("nn", "n'")
+         , ("tni", "texi")    -- override
          , ("/e", "∃")
          , ("/u", "∀")
          , ("l`", "¬")
@@ -119,7 +121,7 @@ consonant = [ Consonant{ start = [ ("f", "p")
                                  map (first (<> "n"))
                                  [ ("d", "dex")
                                  , ("h", "hux")
-                                 , ("t", "tex")
+                                 , ("t", "tox")
                                  , ("s", "sux")
                                  ]
                        , yoon = "t"
