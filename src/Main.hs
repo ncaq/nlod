@@ -5,7 +5,7 @@ import           Control.Applicative
 import           Control.Arrow
 import           Data.Char
 import           Data.List
-import           Data.Maybe
+import           Data.Maybe          ()
 import           Data.Monoid
 import qualified Data.Text           as T
 import qualified Data.Text.IO        as T
@@ -18,17 +18,15 @@ makeMozc :: [T.Text]
 makeMozc = map (uncurry (\s h -> s <> "\t" <> h)) romaKana
 
 romaKana :: [(T.Text, T.Text)]
-romaKana = map (fromJust <$>) $ filter (isJust . snd) $ map (toDwimKanaMaybe <$>) seqRoma
-  where toDwimKanaMaybe roma = let kana = toDwimKana roma
-                               in if isNothing (T.find (\c -> isLatin1 c && isAlpha c) kana) then Just kana else Nothing
+romaKana = nubBy (\a b -> fst a == fst b) $ filter notElemUntransformed $ map (toDwimKana <$>) seqRoma
+  where notElemUntransformed (_, kana) = not $ T.any (\c -> isLatin1 c && isAlpha c) kana
 
 toDwimKana :: T.Text -> T.Text
 toDwimKana roma | T.head roma == 'v' = toKatakana roma -- "ヴ"
                 | otherwise = toHiragana roma
 
 seqRoma :: [(T.Text, T.Text)]
-seqRoma = nub $
-          (manual <>) $
+seqRoma = (manual <>) $
           filter removeConflict $ concat
           [ single -- 1 sequence
           , concatMap (\x -> [ c <> v | c <- start x, v <- basicVowel (de $ asLevelKeys x)]) consonant -- 2 sequence basic consonant + vowel
