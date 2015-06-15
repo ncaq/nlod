@@ -46,6 +46,7 @@ manual :: [(T.Text, T.Text)]
 manual = [ ("-", "ー")
          , ("nn", "n'")
          , ("tni", "texi")    -- override
+         , ("tnx", "texin'")    -- override
          , ("/e", "∃")
          , ("/u", "∀")
          , ("l`", "¬")
