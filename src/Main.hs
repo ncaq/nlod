@@ -45,8 +45,10 @@ seqRoma = (manual <>) $
 manual :: [(T.Text, T.Text)]
 manual = [ ("-", "ー")
          , ("nn", "n'")
-         , ("tni", "texi")      -- override
-         , ("tnx", "texin'")    -- override
+         , ("tni", "texi")
+         , ("tnx", "texin'")
+         , ("we", "ゑ")
+         , ("wi", "ゐ")
          , ("lva", "lya")
          , ("lvo", "lyo")
          , ("lvu", "lyu")
