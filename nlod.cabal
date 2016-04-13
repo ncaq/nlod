@@ -60,11 +60,12 @@ executable nlod
   -- other-extensions:
 
   -- Other library packages from which modules are imported.
-  build-depends:       base, containers, text, romkan
+  build-depends:       base, classy-prelude, romkan
 
   -- Directories containing source files.
   hs-source-dirs:      src
 
   -- Base language which the package is written in.
   default-language:    Haskell2010
-
+  default-extensions:  NoImplicitPrelude
+                       OverloadedStrings

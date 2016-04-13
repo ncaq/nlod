@@ -1,31 +1,25 @@
-{-# LANGUAGE OverloadedStrings #-}
+module Main (main) where
 
-module Main where
-import           Control.Applicative
-import           Control.Arrow
+import           ClassyPrelude hiding (keys)
 import           Data.Char
-import           Data.List
-import           Data.Maybe          ()
-import           Data.Monoid
-import qualified Data.Text           as T
-import qualified Data.Text.IO        as T
 import           NLP.Romkan
 
 main :: IO ()
-main = mapM_ T.putStrLn makeMozc
+main = mapM_ putStrLn makeMozc
 
-makeMozc :: [T.Text]
+makeMozc :: [Text]
 makeMozc = map (uncurry (\s h -> s <> "\t" <> h)) romaKana
 
-romaKana :: [(T.Text, T.Text)]
-romaKana = nubBy (\a b -> fst a == fst b) $ filter notElemUntransformed $ map (toDwimKana <$>) seqRoma
-  where notElemUntransformed (_, kana) = not $ T.any (\c -> isLatin1 c && isAlpha c) kana
+romaKana :: [(Text, Text)]
+romaKana = ordNubBy fst (==) $ filter notElemUntransformed $ map (toDwimKana <$>) seqRoma
+  where notElemUntransformed :: (Text, Text) -> Bool
+        notElemUntransformed (_, kana) = not $ any (\c -> isLatin1 c && isAlpha c) kana
 
-toDwimKana :: T.Text -> T.Text
-toDwimKana roma | T.head roma == 'v' = toKatakana roma -- "ヴ"
+toDwimKana :: Text -> Text
+toDwimKana roma | headEx roma == 'v' = toKatakana roma -- "ヴ"
                 | otherwise = toHiragana roma
 
-seqRoma :: [(T.Text, T.Text)]
+seqRoma :: [(Text, Text)]
 seqRoma = (manual <>) $
           filter removeConflict $ concat
           [ single -- 1 sequence
@@ -33,16 +27,16 @@ seqRoma = (manual <>) $
           , concatMap (\x -> [ (cf <> yoon x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- yoonVowel (asLevelKeys x)]) consonant -- 3 sequence yoon and shortcut
           , concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant -- 3 sequence shortcut sokuon and etc
           ]
-  where de xs = (head xs, last xs)
-        removeConflict (s, _) = not $ or [ T.isPrefixOf "ww" s -- grow
-                                         , T.isPrefixOf "lf" s
-                                         , T.isPrefixOf "lg" s
-                                         , T.isPrefixOf "lc" s
-                                         , T.isPrefixOf "lr" s
-                                         , T.isPrefixOf "ll" s
+  where de xs = (headEx xs, lastEx xs)
+        removeConflict (s, _) = not $ or [ isPrefixOf "ww" s -- grow
+                                         , isPrefixOf "lf" s
+                                         , isPrefixOf "lg" s
+                                         , isPrefixOf "lc" s
+                                         , isPrefixOf "lr" s
+                                         , isPrefixOf "ll" s
                                          ]
 
-manual :: [(T.Text, T.Text)]
+manual :: [(Text, Text)]
 manual = [ ("-", "ー")
          , ("nn", "n'")
          , ("tni", "texi")
@@ -76,7 +70,7 @@ manual = [ ("-", "ー")
          , ("lz", "↘")
          ]
 
-single :: [(T.Text, T.Text)]
+single :: [(Text, Text)]
 single = [ ("'", "xtu")
          , ("p", "…")
          , ("a", "a")
@@ -91,10 +85,10 @@ single = [ ("'", "xtu")
          , ("x", "in'")
          ]
 
-data Consonant = Consonant{ start       :: [(T.Text, T.Text)]
-                          , yoon        :: T.Text
-                          , shortcut    :: T.Text
-                          , asLevelKeys :: [T.Text]
+data Consonant = Consonant{ start       :: [(Text, Text)]
+                          , yoon        :: Text
+                          , shortcut    :: Text
+                          , asLevelKeys :: [Text]
                           }
 
 consonant :: [Consonant]
@@ -164,7 +158,7 @@ consonant = [ Consonant{ start = [ ("f", "p")
                        }
             ]
 
-basicVowel :: (T.Text, T.Text) -> [(T.Text, T.Text)]
+basicVowel :: (Text, Text) -> [(Text, Text)]
 basicVowel (yuu, you) = [ ("'", "ai")
                         , (",", "ou")
                         , (".", "ei")
@@ -185,7 +179,7 @@ basicVowel (yuu, you) = [ ("'", "ai")
                         , (you, "ixyou")
                         ]
 
-yoonVowel :: [T.Text] -> [(T.Text, T.Text)]
+yoonVowel :: [Text] -> [(Text, Text)]
 yoonVowel keys = [ ("'", "ixyai")
                  , (",", "ixyou")
                  , (".", "ixei")
@@ -209,7 +203,7 @@ yoonVowel keys = [ ("'", "ixyai")
                           , "ixyutu"
                           ]
 
-shortcutVowel :: [(T.Text, T.Text)]
+shortcutVowel :: [(Text, Text)]
 shortcutVowel = [ ("'", "ixyaxtu")
                 , (",", "ixyoxtu")
                 , (".", "ixextu")
