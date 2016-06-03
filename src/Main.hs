@@ -120,7 +120,7 @@ consonant = [ Consonant{ start = [ ("f", "p")
                                  map (first (<> "n"))
                                  [ ("d", "dex")
                                  , ("h", "hux")
-                                 , ("t", "tox")
+                                 , ("t", "tex")
                                  , ("s", "sux")
                                  ]
                        , yoon = "t"
