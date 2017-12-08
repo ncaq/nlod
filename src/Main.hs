@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 module Main (main) where
 
 import           ClassyPrelude hiding (keys)
@@ -28,13 +29,14 @@ seqRoma = (manual <>) $
           , concatMap (\x -> [ (cf <> shortcut x <> vf, cs <> vs) | (cf, cs) <- start x, (vf, vs) <- shortcutVowel]) consonant -- 3 sequence shortcut sokuon and etc
           ]
   where de xs = (headEx xs, lastEx xs)
-        removeConflict (s, _) = not $ or [ isPrefixOf "ww" s -- grow
-                                         , isPrefixOf "lf" s
-                                         , isPrefixOf "lg" s
-                                         , isPrefixOf "lc" s
-                                         , isPrefixOf "lr" s
-                                         , isPrefixOf "ll" s
-                                         ]
+        removeConflict (s, _) = not $ or
+            [ "ww" `isPrefixOf` s -- grow
+            , "lf" `isPrefixOf` s
+            , "lg" `isPrefixOf` s
+            , "lc" `isPrefixOf` s
+            , "lr" `isPrefixOf` s
+            , "ll" `isPrefixOf` s
+            ]
 
 manual :: [(Text, Text)]
 manual = [ ("-", "ー")
