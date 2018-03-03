@@ -1,4 +1,4 @@
 flags: {}
 extra-deps:
 - romkan-0.1.0.0
-resolver: lts-9.17
+resolver: lts-10.7
