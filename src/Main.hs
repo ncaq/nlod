@@ -31,6 +31,8 @@ seqRoma = (manual <>) $
   where de xs = (headEx xs, lastEx xs)
         removeConflict (s, _) = not $ or
             [ "ww" `isPrefixOf` s -- grow
+            , "we" `isPrefixOf` s
+            , "wi" `isPrefixOf` s
             , "lf" `isPrefixOf` s
             , "lg" `isPrefixOf` s
             , "lc" `isPrefixOf` s
