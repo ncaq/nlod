@@ -143,7 +143,7 @@ NLODでは左手中央段で母音+`っ`,下段で母音+`んっ`,上段で`a|o|
     * JLOD: `zbxsdi`
     * NLOD: `zmisitu`
 * 発達
-    * JLOD: `hd:tda`
+    * JLOD: `hd;tda`
     * NLOD: `hhatatu`
 * キンッキン
     * JLOD: `cx'cx`
