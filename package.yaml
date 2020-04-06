@@ -1,0 +1,46 @@
+name: nlod
+version: 5.0.0.0
+github: "ncaq/nlod"
+license: MIT
+author: "ncaq"
+maintainer: "ncaq@ncaq.net"
+copyright: "© ncaq"
+
+extra-source-files:
+  - README.md
+
+# Metadata used when publishing your package
+synopsis: nlod
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description: Please see the README on GitHub at <https://github.com/ncaq/nlod#readme>
+
+ghc-options:
+  - -Wall
+  # - -Wall-missed-specialisations
+  - -Widentities
+  # - -Wimplicit-prelude
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  # - -Wmissed-specialisations
+  # - -Wmissing-export-lists
+  - -Wmissing-exported-signatures
+  - -Wmissing-home-modules
+  # - -Wmissing-import-lists
+  # - -Wmissing-local-signatures
+  # - -Wmonomorphism-restriction
+  # - -Wpartial-fields
+  - -Wredundant-constraints
+  - -Wcompat
+
+dependencies:
+  - base >= 4.7 && < 5
+  - classy-prelude
+  - romkan
+
+executables:
+  nlod:
+    main: Main.hs
+    source-dirs: src

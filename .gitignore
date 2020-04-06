@@ -1,4 +1,9 @@
+# Created by https://www.gitignore.io/api/haskell
+# Edit at https://www.gitignore.io/?templates=haskell
+
+### Haskell ###
 dist
+dist-*
 cabal-dev
 *.o
 *.hi
@@ -6,7 +11,6 @@ cabal-dev
 *.chs.h
 *.dyn_o
 *.dyn_hi
-.virtualenv
 .hpc
 .hsenv
 .cabal-sandbox/
@@ -14,8 +18,13 @@ cabal.sandbox.config
 *.prof
 *.aux
 *.hp
+*.eventlog
 .stack-work/
+cabal.project.local
+cabal.project.local~
+.HTF/
+.ghc.environment.*
 
-GPATH
-GRTAGS
-GTAGS
+# End of https://www.gitignore.io/api/haskell
+
+*.cabal
