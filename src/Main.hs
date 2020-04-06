@@ -5,6 +5,7 @@ module Main ( main ) where
 
 import           ClassyPrelude hiding (keys)
 import           Data.Char
+import           Data.Text     (replace)
 import           NLP.Romkan
 
 main :: IO ()
@@ -14,13 +15,14 @@ makeMozc :: [Text]
 makeMozc = map (uncurry (\s h -> s <> "\t" <> h)) romaKana
 
 romaKana :: [(Text, Text)]
-romaKana = ordNubBy fst (==) $ filter notElemUntransformed $ map (toDwimKana <$>) seqRoma
+romaKana = ordNubBy fst (==) $ filter notElemUntransformed $ map (toHiraganaCompatibleForGoogle <$>) seqRoma
  where notElemUntransformed :: (Text, Text) -> Bool
        notElemUntransformed (_, kana) = not $ any (\c -> isLatin1 c && isAlpha c) kana
 
-toDwimKana :: Text -> Text
-toDwimKana roma | headEx roma == 'v' = toKatakana roma -- "ヴ"
-                | otherwise          = toHiragana roma
+-- | `toHiragana`は う゛ と出力してしまうため ゔ に直す
+-- see [読みに「う゛」を含む単語を辞書登録できない - Gboard Community](https://support.google.com/gboard/thread/12248624?hl=ja)
+toHiraganaCompatibleForGoogle :: Text -> Text
+toHiraganaCompatibleForGoogle = replace "う゛" "ゔ" . toHiragana
 
 seqRoma :: [(Text, Text)]
 seqRoma = (manual <>) $ filter removeConflict $ concat

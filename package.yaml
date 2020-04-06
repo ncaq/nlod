@@ -39,6 +39,7 @@ dependencies:
   - base >= 4.7 && < 5
   - classy-prelude
   - romkan
+  - text
 
 executables:
   nlod:
