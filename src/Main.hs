@@ -1,6 +1,8 @@
 {-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
+-- | 基礎的な流れ
+-- テーブルを元にNLP.Romkan向けのローマ字を出力して変換する
 module Main ( main ) where
 
 import           ClassyPrelude hiding (keys)
@@ -8,28 +10,42 @@ import           Data.Char
 import           Data.Text     (replace)
 import           NLP.Romkan
 
+-- | 標準出力にMozcのキーマップを出力します
 main :: IO ()
 main = mapM_ putStrLn makeMozc
 
+-- | 各項目がMozcのキーマップ一行となるリストを生成します
 makeMozc :: [Text]
-makeMozc = map (uncurry (\s h -> s <> "\t" <> h)) romaKana
+makeMozc = map (\(s, h) -> s <> "\t" <> h) romaKana
 
+-- | ローマ字、かなのペアのリストを生成します
+-- かなに未変換のローマ字がある項目は排除します
 romaKana :: [(Text, Text)]
 romaKana = ordNubBy fst (==) $ filter notElemUntransformed $ map (toHiraganaCompatibleForGoogle <$>) seqRoma
  where notElemUntransformed :: (Text, Text) -> Bool
        notElemUntransformed (_, kana) = not $ any (\c -> isLatin1 c && isAlpha c) kana
 
--- | `toHiragana`は う゛ と出力してしまうため ゔ に直す
+-- | NLP.Romkanを使ってローマ字を平仮名に変換します
+-- `toHiragana`は う゛ と出力してしまうため ゔ に直す処理を含めました
 -- see [読みに「う゛」を含む単語を辞書登録できない - Gboard Community](https://support.google.com/gboard/thread/12248624?hl=ja)
+-- ゖとかの小小書きは対応してなかったので雑にラップします
 toHiraganaCompatibleForGoogle :: Text -> Text
-toHiraganaCompatibleForGoogle = replace "う゛" "ゔ" . toHiragana
+toHiraganaCompatibleForGoogle = completeKogaki . replace "う゛" "ゔ" . toHiragana
+  where completeKogaki = replace "xか" "ゕ" . replace "xけ" "ゖ"
 
+-- | ローマ字、かなのペアのリストを基礎的なテーブルデータから生成します
 seqRoma :: [(Text, Text)]
-seqRoma = (manual <>) $ filter removeConflict $ concat
-  [ single -- 1 sequence
+seqRoma = (manual <>) $ filter removeConflict $
+  -- 小文字にするキーを付与したバージョンも作る
+  concatMap (\x -> [x, bimap ("l" <>) ("x" <>) x]) $
+  concat
+  -- 単体
+  [ single
+  -- 2シーケンスの変換(hs -> ひょうなど)
   , concatMap
     (\x -> [ c <> v | c <- start x, v <- basicVowel (de $ asLevelKeys x) ])
-    consonant -- 2 sequence basic consonant + vowel
+    consonant
+  -- 拗音3シーケンスの変換(stn -> しゅくなど)
   , concatMap
     (\x ->
         [ (cf <> yoon x <> vf, cs <> vs)
@@ -37,63 +53,55 @@ seqRoma = (manual <>) $ filter removeConflict $ concat
         , (vf, vs) <- yoonVowel (asLevelKeys x)
         ]
     )
-    consonant -- 3 sequence yoon and shortcut
+    consonant
+  -- 促音3シーケンスの変換
   , concatMap
     (\x ->
-       [ (cf <> shortcut x <> vf, cs <> vs)
+       [ (cf <> sokuon x <> vf, cs <> vs)
        | (cf, cs) <- start x
-       , (vf, vs) <- shortcutVowel
+       , (vf, vs) <- sokuonVowel
        ]
     )
-    consonant -- 3 sequence shortcut sokuon and etc
+    consonant
   ]
  where de xs = (headEx xs, lastEx xs)
-       removeConflict (s, _) = not $ or
-         [ "ww" `isPrefixOf` s -- grow
-         , "we" `isPrefixOf` s
-         , "wi" `isPrefixOf` s
-         , "lf" `isPrefixOf` s
-         , "lg" `isPrefixOf` s
-         , "lc" `isPrefixOf` s
-         , "lr" `isPrefixOf` s
-         , "ll" `isPrefixOf` s
-         ]
+       -- 他のテーブルと競合するものを排除
+       removeConflict (s, _) = not
+         (("ww" `isPrefixOf` s) || -- 草を生やすため
+          ("we" `isPrefixOf` s) ||
+          ("wi" `isPrefixOf` s))
 
+-- | 手動で入れるしかない特殊変換
 manual :: [(Text, Text)]
 manual =
-  [ ("-"  , "ー")
-  , ("nn" , "n'")
+  [ ("nn" , "n'")
   , ("we" , "ゑ")
   , ("wi" , "ゐ")
-  , ("lb" , "⇔")
-  , ("lc" , "ヵ")
-  , ("ld" , "∈")
-  , ("lf" , "∋")
-  , ("lg" , "↖")
-  , ("lh" , "←")
-  , ("ll" , "↗")
-  , ("lm" , "↙")
-  , ("ln" , "↓")
-  , ("lr" , "々")
-  , ("ls" , "→")
-  , ("lt" , "↑")
-  , ("lva", "xya")
-  , ("lvo", "xyo")
-  , ("lvu", "xyu")
-  , ("lw" , "ʬ")
-  , ("lz" , "↘")
-  , ("/," , "、")
-  , ("/." , "。")
-  , ("/a" , "∧")
-  , ("/e" , "∃")
-  , ("/n" , "¬")
-  , ("/o" , "∨")
-  , ("/u" , "∀")
+  , ("/a" , "∧") -- andから連想
+  , ("/o" , "∨") -- orから連想
+  , ("/e" , "∃") -- existから連想
+  , ("/u" , "∀") -- andが埋まっていたのでeの隣に置きました
+  , ("/b" , "⇔") -- bothから連想
+  , ("/d" , "∈") -- Dvorakだと∋と対になっていて丁度いい
+  , ("/f" , "∋") -- Dvorakだと∈と対になっていて丁度いい
+  , ("/c" , "々") -- 踊り字は連想出来ないので雑に配置
+  , ("/r" , "ゝ") -- 踊り字は連想出来ないので雑に配置
+  , ("/w" , "ʬ")  -- wの特殊文字なので当然wに配置
+  , ("/h" , "←")
+  , ("/t" , "↑")
+  , ("/n" , "↓")
+  , ("/s" , "→")
+  , ("/g" , "↖")
+  , ("/l" , "↗")
+  , ("/m" , "↙")
+  , ("/z" , "↘")
   ]
 
+-- | 単体で読みを構成するもの
 single :: [(Text, Text)]
 single =
   [ ("'", "xtu")
+  , ("-", "ー")
   , ("p", "…")
   , ("y", "・")
   , ("a", "a")
@@ -108,39 +116,42 @@ single =
   , ("x", "in'")
   ]
 
+-- | テーブルを構成するための配置データを構成する
 data Consonant
   = Consonant
-  { start       :: [(Text, Text)]
-  , yoon        :: Text
-  , shortcut    :: Text
-  , asLevelKeys :: [Text]
-  }
+  { start       :: ![(Text, Text)] -- ^ 打ち始めの文字
+  , yoon        :: !Text           -- ^ 拗音を開始するための文字
+  , sokuon      :: !Text           -- ^ 促音を開始するための文字
+  , asLevelKeys :: ![Text]         -- ^ 同じキーボードの段にある文字
+  } deriving (Eq, Ord, Show, Read)
 
+-- | 3段マップデータ
 consonant :: [Consonant]
 consonant =
   [ Consonant
-    { start       = [("f", "p"), ("g", "g"), ("c", "k"), ("r", "r"), ("l", "x")]
-                    <> map (first (<> "r")) [("f", "pux"), ("g", "gux"), ("c", "kux"), ("r", "rux")]
+    { start       = [("f", "p"), ("g", "g"), ("c", "k"), ("r", "r")] <>
+      [("fr", "pux"), ("gr", "gux"), ("cr", "kux"), ("rr", "rux")]
     , yoon        = "c"
-    , shortcut    = "g"
+    , sokuon      = "g"
     , asLevelKeys = ["f", "g", "c", "r", "l"]
     }
   , Consonant
-    { start       = [("d", "d"), ("h", "h"), ("t", "t"), ("n", "n"), ("s", "s")]
-                      <> map (first (<> "n")) [("d", "dex"), ("h", "hux"), ("t", "tex"), ("s", "sux")]
+    { start       = [("d", "d"), ("h", "h"), ("t", "t"), ("n", "n"), ("s", "s")] <>
+      [("dn", "dex"), ("hn", "hux"), ("tn", "tex"), ("sn", "sux")]
     , yoon        = "t"
-    , shortcut    = "h"
+    , sokuon      = "h"
     , asLevelKeys = ["d", "h", "t", "n", "s"]
     }
   , Consonant
-    { start       = [("b", "b"), ("m", "m"), ("w", "w"), ("v", "y"), ("z", "z")]
-                    <> map (first (<> "v")) [("b", "bux"), ("m", "mux"), ("v", "v"), ("w", "ux"), ("z", "zux")]
+    { start       = [("b", "b"), ("m", "m"), ("w", "w"), ("v", "y"), ("z", "z")] <>
+      [("bv", "bux"), ("mv", "mux"), ("vv", "v"), ("wv", "ux"), ("zv", "zux")]
     , yoon        = "w"
-    , shortcut    = "m"
+    , sokuon      = "m"
     , asLevelKeys = ["b", "m", "w", "v", "z"]
     }
   ]
 
+-- | 基礎的な変換テーブル
 basicVowel :: (Text, Text) -> [(Text, Text)]
 basicVowel (yuu, you) =
   [ ("'", "ai")
@@ -159,8 +170,9 @@ basicVowel (yuu, you) =
   , ("k", "un'")
   , ("x", "in'")
   ]
-  <> [(yuu, "ixyuu"), (you, "ixyou")]
+  <> [(yuu, "ixyuu"), (you, "ixyou")] -- 2キーショートカット
 
+-- | 拗音を含む出力をするためのテーブル
 yoonVowel :: [Text] -> [(Text, Text)]
 yoonVowel keys =
   [ ("'", "ixyai")
@@ -179,10 +191,11 @@ yoonVowel keys =
   , ("k", "ixyun'")
   , ("x", "ixin'")
   ]
-  <> zip keys ["ixyatu", "ixyaku", "ixyoku", "ixyuku", "ixyutu"]
+  <> zip keys ["ixyatu", "ixyaku", "ixyoku", "ixyuku", "ixyutu"] -- 3キーショートカット
 
-shortcutVowel :: [(Text, Text)]
-shortcutVowel =
+-- | 促音を含む出力をするためのテーブル
+sokuonVowel :: [(Text, Text)]
+sokuonVowel =
   [ ("'", "ixyaxtu")
   , (",", "ixyoxtu")
   , (".", "ixextu")
